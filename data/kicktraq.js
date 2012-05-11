@@ -1,8 +1,41 @@
 jQuery(function($){
 var $pathname = window.location.pathname;
 
+/*
+ * graphs to be displayed on the homepage of the project.
+ */
+var homeGraphs = [
+  {
+    name : "funding",
+    graph : "dailychart.png"
+  }/*,
+  {
+    name : "projection cone",
+    graph : "exp-cone.png"
+  },
+  {
+    name : "funding trend",
+    graph : "exp-trend.png"
+  }
+  */
+];
+
+/*
+ * graphs to be displayed on the backers page of the project.
+ */
+var backersGraphs = [
+  {
+    name : "backers/day",
+    graph : "backerchart.png"
+  },
+  {
+    name : "pledges/day",
+    graph : "dailypledges.png"
+  }
+];
+
 // default to not showing
-var myGraph = "";
+var myGraph = null;
 var myExtras = false;
 
 
@@ -17,7 +50,7 @@ if(myURL[4]) {
 
     if(myURL[4].substr(0,1) == '?') {
         // it's a query string, we're good
-        myGraph = "dailychart.png"
+        myGraph = homeGraphs;
         myExtras = true;
     } else {
         myExtras = false;
@@ -29,7 +62,7 @@ if(myURL[4]) {
                 myExtras = true;
                 break;
             case 'backers':
-                myGraph = "backerchart.png"
+                myGraph = backersGraphs;
                 myExtras = true;
                 break;
             default:
@@ -38,20 +71,79 @@ if(myURL[4]) {
         }
     }
 } else {
-    myGraph = "dailychart.png"
+    myGraph = homeGraphs;
 }
-
-
 
 if(myGraph) {
 
-    myGraphCode =
+    // the main template for the graphs.
+    var $kicktraq = $(
     '<div id="kicktraq">' +
     '  <div id="kicktraq_placeholder">(loading your very own snazzy kicktraq chart)</div>' +
-    '  <div id="kicktraq_graph"><a href="http://kicktraq.com' + $pathname + '/" target="_blank"><img src="http://kicktraq.com/' + $pathname + '/' + myGraph + '"></a></div>' +
-    '</div>';
+    '  <div id="kicktraq_graph">' +
+    '    <a href="http://kicktraq.com' + $pathname + '/" target="_blank"></a>' +
+    '  </div>' +
+    '  <ul id="kicktraq_tabs"></ul>' +
+    '  <div class="kicktraq_rst"></div>' +
+    '</div>'
+    ), graphImg, graphBtn;
 
-    $("#content").prepend(myGraphCode);
+    // callback used if the image can't load properly.
+    var handleImageError = function (event) {
+      var $img = $(this);
+      $img.after($("<p></p>", {
+        // same id, hide/show as the images
+        'id'    : $img.attr("id"),
+        // same style, hidden as the image
+        'style' : $img.attr("style"),
+        'text'  : "Kicktraq : error loading image !",
+        'class' : "kicktraq_error"
+      })).remove();
+    };
+
+    // for each graph, create the DOM elements
+    for (var i = 0; i < myGraph.length; ++i) {
+      graphImg = $("<img />", {
+        'id'  : "kicktraq_graph_" + i
+      })
+      .bind("error", handleImageError)
+      .attr("src", "http://kicktraq.com/" + $pathname + "/" + myGraph[i].graph);
+
+      graphBtn = $("<li>", {
+        'text'  : myGraph[i].name
+      }).data("for", "#kicktraq_graph_" + i);
+
+      if (i === 0) {
+        // first graph, default
+        graphBtn.addClass("on");
+      } else {
+        graphImg.hide();
+      }
+
+      $kicktraq.find("#kicktraq_graph a").append(graphImg);
+      $kicktraq.find("#kicktraq_tabs").append(graphBtn);
+    }
+
+    // with only one tab, don't show the bar
+    if (myGraph.length === 1) {
+      $kicktraq.find("#kicktraq_tabs").hide();
+    }
+
+    // handle tabs
+    $kicktraq.on("click", "#kicktraq_tabs li", function () {
+      // handle the tab bar
+      $("#kicktraq_tabs li").removeClass("on");
+      $(this).addClass("on");
+
+      // handle the images
+      $("#kicktraq_graph a > *").hide();
+      $($(this).data("for"))
+      .show()
+      // scroll to show the whole graph
+      .get(0).scrollIntoView();
+    });
+
+    $("#content").prepend($kicktraq);
 }
 
 

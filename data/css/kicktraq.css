@@ -9,8 +9,8 @@
   margin-left: 10px;
   margin-right: 20px;
   margin-bottom: 5px;
-  min-height: 268px;
-  border: 1px solid #eeeeee;
+  min-height: 298px;
+  border: 1px solid #eee;
 }
 
 #kicktraq_graph {
@@ -27,10 +27,35 @@
   position: absolute;
 }
 
+#kicktraq_tabs {
+  margin: 0;
+  padding: 0;
+}
+.kicktraq_rst {
+  clear:both;
+}
+.kicktraq_error {
+  color: red;
+  background: white;
+  padding: 115px 0;
+  text-align: center;
+}
+#kicktraq_tabs li.on {
+  background: #eee;
+}
+#kicktraq_tabs li {
+  float:left;
+  list-style-type: none;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+
 
 /* prepare the page : we need enough space BEFORE inserting the #kicktraq */
 body #content > div {
-  margin-top : 275px; /* #kicktraq height + border + margin */
+  margin-top : 305px; /* #kicktraq height + border + margin */
 }
 /* when #kicktraq is in the DOM, we don't need anymore the margin */
 #kicktraq, #kicktraq ~ div {
