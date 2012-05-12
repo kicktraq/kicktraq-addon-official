@@ -1,0 +1,11 @@
+{
+    "name": "kicktraq",
+    "license": "MPL 1.1",
+    "author": "",
+    "version": "1.0b",
+    "fullName": "Kicktraq",
+    "id": "jid0-i79UhEDcYiUOiFdxIadGhfvSpTA@jetpack",
+    "description": "Track Kickstarter Campaigns",
+    "icon":"img/icon48.png",
+    "icon64":"img/icon64.png"
+}

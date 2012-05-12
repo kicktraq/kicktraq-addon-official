@@ -1,0 +1,38 @@
+#moneyraised {
+  border-top: 1px solid #82DB79;
+}
+
+#kicktraq, #kicktraq_placeholder {
+  width: 938px;
+}
+#kicktraq {
+  margin-left: 10px;
+  margin-right: 20px;
+  margin-bottom: 5px;
+  min-height: 268px;
+  border: 1px solid #eeeeee;
+}
+
+#kicktraq_graph {
+  position:relative;
+}
+#kicktraq_graph img {
+  border: 0px;
+}
+
+#kicktraq_placeholder {
+  text-align: center;
+  margin-top: 120px;
+  color: #d3d3d3;
+  position: absolute;
+}
+
+
+/* prepare the page : we need enough space BEFORE inserting the #kicktraq */
+body #content > div {
+  margin-top : 275px; /* #kicktraq height + border + margin */
+}
+/* when #kicktraq is in the DOM, we don't need anymore the margin */
+#kicktraq, #kicktraq ~ div {
+  margin-top : 0 !important;
+}

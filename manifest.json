@@ -1,0 +1,21 @@
+{
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "data/jquery-1.7.2.min.js", "data/kicktraq.js" ],
+      "css": [ "data/css/kicktraq.css" ],
+      "matches": [ "http://www.kickstarter.com/projects/*" ]
+   } ],
+   "default_local": "en",
+   "description": "Track Kickstarter Campaigns",
+   "homepage_url": "http://www.kicktraq.com",
+   "icons": {
+      "128": "img/icon128.png",
+      "16":  "img/icon16.png",
+      "48":  "img/icon48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXKsq55CCjoUgRyGHDmlGywpRQRNbTvZ9JxtCl+8IyX8KA5LPfHc1UiSkheVHHcYoOhQCHahOlQ9Z0LVyqnRMShJeNa1oV7eL+nLkdphaBulEo5f5ZUawDEcUZGa70DJpcjIgUqFXaM32B30ZVLAAdnVXm0VZKJYYFDnfnz+rf9wIDAQAB",
+   "manifest_version": 2,
+   "name": "Kicktraq",
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "version": "1.0"
+}
