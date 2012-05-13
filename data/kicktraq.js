@@ -1,91 +1,110 @@
-jQuery(function($){
-var $pathname = window.location.pathname;
+var kicktraqObj = {
 
-/*
- * graphs to be displayed on the homepage of the project.
- */
-var homeGraphs = [
-  {
-    name : "funding",
-    graph : "dailychart.png"
-  }/*,
-  {
-    name : "projection cone",
-    graph : "exp-cone.png"
+  /*
+   * graphs to be displayed on the backers page of the project.
+   */
+  graphs : {
+    "home" : [
+      {
+        name : "funding",
+        graph : "dailychart.png"
+      }/*,
+      {
+        name : "projection cone",
+        graph : "exp-cone.png"
+      },
+      {
+        name : "funding trend",
+        graph : "exp-trend.png"
+      }
+      */
+    ],
+    "backers" : [
+      {
+        name : "backers/day",
+        graph : "backerchart.png"
+      },
+      {
+        name : "pledges/day",
+        graph : "dailypledges.png"
+      }
+    ]
   },
-  {
-    name : "funding trend",
-    graph : "exp-trend.png"
-  }
-  */
-];
 
-/*
- * graphs to be displayed on the backers page of the project.
- */
-var backersGraphs = [
-  {
-    name : "backers/day",
-    graph : "backerchart.png"
-  },
-  {
-    name : "pledges/day",
-    graph : "dailypledges.png"
-  }
-];
-
-// default to not showing
-var myGraph = null;
-var myExtras = false;
-
-
-// aquire URL tokens
-myURL = $pathname.split('/');
-
-// check for 4th token in path
-if(myURL[4]) {
-
-    // rebuild path
-    $pathname = "/" + myURL[1] + "/" + myURL[2] + "/" + myURL[3];
-
-    if(myURL[4].substr(0,1) == '?') {
-        // it's a query string, we're good
-        myGraph = homeGraphs;
-        myExtras = true;
-    } else {
-        myExtras = false;
-
-        // test for valid URL
-        switch (myURL[4]) {
-            case 'comments':
-            case 'posts':
-                myExtras = true;
-                break;
-            case 'backers':
-                myGraph = backersGraphs;
-                myExtras = true;
-                break;
-            default:
-                // don't show anything else with a 6th token
-                break;
-        }
+  /**
+   * Init the kicktraq object, prepare the graphs
+   * @param {string} pathname the path of the current page
+   */
+  init : function (pathname) {
+    var currentGraphs = this._findCurrentGraphs(pathname);
+    var kicktraqPath = this._buildKicktraqPath(pathname);
+    if (currentGraphs) {
+      this.$kicktraq = this._buildGraph(currentGraphs, kicktraqPath);
     }
-} else {
-    myGraph = homeGraphs;
-}
+  },
 
-if(myGraph) {
+  /**
+   * Find which graphs should be displayed.
+   * @param {string} pathname the path of the current page
+   * @return {array} the graphs.
+   * @see this.graphs
+   */
+  _findCurrentGraphs : function (pathname) {
 
+    var graph = null;
+
+    // aquire URL tokens
+    var myURL = pathname.split('/');
+
+    // check for 4th token in path
+    if(myURL[4]) {
+
+      // test for valid URL
+      switch (myURL[4]) {
+        case 'comments':
+        case 'posts':
+          break;
+        case 'backers':
+          graph = "backers";
+          break;
+        default:
+          break;
+      }
+    } else {
+      graph = "home";
+    }
+
+    return this.graphs[graph];
+  },
+
+  /**
+   * Create the kicktraq path from the current project path.
+   * @param {string} pathname the path of the current page.
+   * @return {string} the kicktraq url
+   */
+  _buildKicktraqPath : function (pathname) {
+    var myURL = pathname.split('/');
+    return "http://kicktraq.com/" + myURL[1] + "/" + myURL[2] + "/" + myURL[3];
+
+  },
+
+  /**
+   * Create the DOM elements displaying the graphs.
+   * @param {string} currentGraphs the graphs to display.
+   * @param {string} kicktraqPath the path to the project on kicktraq.
+   * @return {jQuery} the jQuery object containing the generated DOM fragment.
+   */
+  _buildGraph : function (currentGraphs, kicktraqPath) {
     // the main template for the graphs.
     var $kicktraq = $(
-    '<div id="kicktraq">' +
-    '  <div id="kicktraq_placeholder">(loading your very own snazzy kicktraq chart)</div>' +
-    '  <div id="kicktraq_graph">' +
-    '    <a href="http://kicktraq.com' + $pathname + '/" target="_blank"></a>' +
-    '  </div>' +
-    '  <ul id="kicktraq_tabs"></ul>' +
-    '  <div class="kicktraq_rst"></div>' +
-    '</div>'
+      '<div id="kicktraq">' +
+      '  <div id="kicktraq_placeholder">(loading your very own snazzy kicktraq chart)</div>' +
+      '  <div id="kicktraq_graph">' +
+      '    <a href="' + kicktraqPath + '/" target="_blank"></a>' +
+      '  </div>' +
+        '  <ul id="kicktraq_tabs"></ul>' +
+        '  <div class="kicktraq_rst"></div>' +
+        '</div>'
     ), graphImg, graphBtn;
 
     // callback used if the image can't load properly.
@@ -102,15 +121,15 @@ if(myGraph) {
     };
 
     // for each graph, create the DOM elements
-    for (var i = 0; i < myGraph.length; ++i) {
+    for (var i = 0; i < currentGraphs.length; ++i) {
       graphImg = $("<img />", {
         'id'  : "kicktraq_graph_" + i
       })
       .bind("error", handleImageError)
-      .attr("src", "http://kicktraq.com/" + $pathname + "/" + myGraph[i].graph);
+      .attr("src", kicktraqPath + "/" + currentGraphs[i].graph);
 
       graphBtn = $("<li>", {
-        'text'  : myGraph[i].name
+        'text'  : currentGraphs[i].name
       }).data("for", "#kicktraq_graph_" + i);
 
       if (i === 0) {
@@ -125,7 +144,7 @@ if(myGraph) {
     }
 
     // with only one tab, don't show the bar
-    if (myGraph.length === 1) {
+    if (currentGraphs.length === 1) {
       $kicktraq.find("#kicktraq_tabs").hide();
     }
 
@@ -143,14 +162,25 @@ if(myGraph) {
       .get(0).scrollIntoView();
     });
 
-    $("#content").prepend($kicktraq);
-}
+    return $kicktraq;
+  },
+
+  /**
+   * Add the graphs to the page.
+   * This should be called when the DOM is ready.
+   */
+  onDOMReady : function () {
+    if (this.$kicktraq) {
+      $("#content").prepend(this.$kicktraq);
+    }
+  }
+};
 
 
 
-// alert(myExtras);
+kicktraqObj.init(window.location.pathname);
 
-if(myExtras == true) {
-    // coming soon
-}
+jQuery(function($){
+  kicktraqObj.onDOMReady();
 });
+
