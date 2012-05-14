@@ -1,4 +1,10 @@
-var kicktraqObj = {
+function Kicktraq(pathname) {
+  this.init(pathname);
+};
+
+Kicktraq.URL_PREFIX = "http://kicktraq.com/";
+
+Kicktraq.prototype = {
 
   /*
    * graphs to be displayed on the backers page of the project.
@@ -84,7 +90,7 @@ var kicktraqObj = {
    */
   _buildKicktraqPath : function (pathname) {
     var myURL = pathname.split('/');
-    return "http://kicktraq.com/" + myURL[1] + "/" + myURL[2] + "/" + myURL[3];
+    return Kicktraq.URL_PREFIX + myURL[1] + "/" + myURL[2] + "/" + myURL[3];
 
   },
 
@@ -175,12 +181,4 @@ var kicktraqObj = {
     }
   }
 };
-
-
-
-kicktraqObj.init(window.location.pathname);
-
-jQuery(function($){
-  kicktraqObj.onDOMReady();
-});
 
