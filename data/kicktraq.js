@@ -163,9 +163,7 @@ Kicktraq.prototype = {
       // handle the images
       $("#kicktraq_graph a > *").hide();
       $($(this).data("for"))
-      .show()
-      // scroll to show the whole graph
-      .get(0).scrollIntoView();
+      .show();
     });
 
     return $kicktraq;
