@@ -1,7 +1,7 @@
 {
    "content_scripts": [ {
       "all_frames": true,
-      "js": [ "data/jquery-1.7.2.min.js", "data/kicktraq.js" ],
+      "js": [ "data/jquery-1.7.2.min.js", "data/kicktraq.js", "data/main.js" ],
       "css": [ "data/css/kicktraq.css" ],
       "matches": [ "http://www.kickstarter.com/projects/*" ]
    } ],
