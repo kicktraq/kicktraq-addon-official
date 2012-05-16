@@ -10,31 +10,26 @@ Kicktraq.prototype = {
    * graphs to be displayed on the backers page of the project.
    */
   graphs : {
-    "home" : [
-      {
-        name : "funding",
-        graph : "dailychart.png"
-      }/*,
-      {
-        name : "projection cone",
-        graph : "exp-cone.png"
-      },
-      {
-        name : "funding trend",
-        graph : "exp-trend.png"
-      }
-      */
-    ],
-    "backers" : [
-      {
-        name : "backers/day",
-        graph : "backerchart.png"
-      },
-      {
-        name : "pledges/day",
-        graph : "dailypledges.png"
-      }
-    ]
+    "funding" : {
+      text : "funding",
+      image : "dailychart.png"
+    }/*,
+    "projection" : {
+      text : "projection cone",
+      image : "exp-cone.png"
+    },
+    "trend" : {
+      text : "funding trend",
+      image : "exp-trend.png"
+    }*/,
+    "backers" : {
+      text : "backers/day",
+      image : "backerchart.png"
+    },
+    "pledges" : {
+      text : "pledges/day",
+      image : "dailypledges.png"
+    }
   },
 
   /**
@@ -42,22 +37,22 @@ Kicktraq.prototype = {
    * @param {string} pathname the path of the current page
    */
   init : function (pathname) {
-    var currentGraphs = this._findCurrentGraphs(pathname);
+    var currentGraph = this._findCurrentGraph(pathname);
     var kicktraqPath = this._buildKicktraqPath(pathname);
-    if (currentGraphs) {
-      this.$kicktraq = this._buildGraph(currentGraphs, kicktraqPath);
+    if (currentGraph) {
+      this.$kicktraq = this._buildGraph(currentGraph, kicktraqPath);
     }
   },
 
   /**
-   * Find which graphs should be displayed.
+   * Find which graph should be displayed.
    * @param {string} pathname the path of the current page
-   * @return {array} the graphs.
+   * @return {string} the graph to display.
    * @see this.graphs
    */
-  _findCurrentGraphs : function (pathname) {
+  _findCurrentGraph : function (pathname) {
 
-    var graph = null;
+    var graph = "funding";
 
     // aquire URL tokens
     var myURL = pathname.split('/');
@@ -76,11 +71,9 @@ Kicktraq.prototype = {
         default:
           break;
       }
-    } else {
-      graph = "home";
     }
 
-    return this.graphs[graph];
+    return graph;
   },
 
   /**
@@ -96,11 +89,11 @@ Kicktraq.prototype = {
 
   /**
    * Create the DOM elements displaying the graphs.
-   * @param {string} currentGraphs the graphs to display.
+   * @param {string} currentGraph the graph to display.
    * @param {string} kicktraqPath the path to the project on kicktraq.
    * @return {jQuery} the jQuery object containing the generated DOM fragment.
    */
-  _buildGraph : function (currentGraphs, kicktraqPath) {
+  _buildGraph : function (currentGraph, kicktraqPath) {
     // the main template for the graphs.
     var $kicktraq = $(
       '<div id="kicktraq">' +
@@ -127,19 +120,21 @@ Kicktraq.prototype = {
     };
 
     // for each graph, create the DOM elements
-    for (var i = 0; i < currentGraphs.length; ++i) {
+    for (var name in this.graphs) {
+      if( !this.graphs.hasOwnProperty(name) ) { continue; }
+      var graph = this.graphs[name];
       graphImg = $("<img />", {
-        'id'  : "kicktraq_graph_" + i
+        'id'  : "kicktraq_graph_" + name
       })
       .bind("error", handleImageError)
-      .attr("src", kicktraqPath + "/" + currentGraphs[i].graph);
+      .attr("src", kicktraqPath + "/" + graph.image);
 
       graphBtn = $("<li>", {
-        'text'  : currentGraphs[i].name
-      }).data("for", "#kicktraq_graph_" + i);
+        'text'  : graph.text
+      }).data("for", "#kicktraq_graph_" + name);
 
-      if (i === 0) {
-        // first graph, default
+      if (name === currentGraph) {
+        // selected graph
         graphBtn.addClass("on");
       } else {
         graphImg.hide();
@@ -150,7 +145,7 @@ Kicktraq.prototype = {
     }
 
     // with only one tab, don't show the bar
-    if (currentGraphs.length === 1) {
+    if (this.graphs.length === 1) {
       $kicktraq.find("#kicktraq_tabs").hide();
     }
 
