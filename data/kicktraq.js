@@ -168,7 +168,7 @@ Kicktraq.prototype = {
     }
 
     // handle tabs
-    k.tabs.on("click", "li", function () {
+    k.tabs.find("li").on("click", function () {
       // handle the tab bar
       k.tabs.find("li").removeClass("on");
       $(this).addClass("on");
@@ -177,6 +177,15 @@ Kicktraq.prototype = {
       k.graph.find("> *").hide();
       $($(this).data("for")).show();
     });
+
+    k.tabs.append(
+      $("<li>").append(
+        $("<a>", {
+          text : "more info",
+          href : kicktraqPath
+        })
+      )
+    );
 
     return k.main
     .append(k.placeholder)
