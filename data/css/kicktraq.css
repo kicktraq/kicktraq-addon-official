@@ -15,6 +15,7 @@
 
 #kicktraq_graph {
   position:relative;
+  display:block;
 }
 #kicktraq_graph img {
   border: 0px;

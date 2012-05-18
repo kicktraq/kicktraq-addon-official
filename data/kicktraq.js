@@ -94,22 +94,39 @@ Kicktraq.prototype = {
    * @return {jQuery} the jQuery object containing the generated DOM fragment.
    */
   _buildGraph : function (currentGraph, kicktraqPath) {
-    // the main template for the graphs.
-    var $kicktraq = $(
-      '<div id="kicktraq">' +
-      '  <div id="kicktraq_placeholder">(loading your very own snazzy kicktraq chart)</div>' +
-      '  <div id="kicktraq_graph">' +
-      '    <a href="' + kicktraqPath + '/" target="_blank"></a>' +
-      '  </div>' +
-        '  <ul id="kicktraq_tabs"></ul>' +
-        '  <div class="kicktraq_rst"></div>' +
-        '</div>'
-    ), graphImg, graphBtn;
+    // the object containing the parts of the Kicktraq graphs.
+    // Put only empty tags in $, see
+    // https://developer.mozilla.org/en/XUL_School/DOM_Building_and_HTML_Insertion
+    var k = {
+      // the main div
+      main : $("<div>", {
+        id : "kicktraq"
+      }),
+      // placeholder, while the image is loading
+      placeholder : $("<div>", {
+        id : "kicktraq_placeholder",
+        text : "(loading your very own snazzy kicktraq chart)"
+      }),
+      // contains the graphs
+      graph : $("<a>", {
+        id : "kicktraq_graph",
+        href : kicktraqPath,
+        target:"_blank"
+      }),
+      // contains the tabs
+      tabs : $("<ul>", {
+        id : "kicktraq_tabs"
+      }),
+      // empty div, used by the css rules
+      rst : $("<div>", {
+        'class' : "kicktraq_rst"
+      })
+    }, graphImg, graphBtn;
 
     // callback used if the image can't load properly.
     var handleImageError = function (event) {
       var $img = $(this);
-      $img.after($("<p></p>", {
+      $img.after($("<p>", {
         // same id, hide/show as the images
         'id'    : $img.attr("id"),
         // same style, hidden as the image
@@ -123,10 +140,11 @@ Kicktraq.prototype = {
     for (var name in this.graphs) {
       if( !this.graphs.hasOwnProperty(name) ) { continue; }
       var graph = this.graphs[name];
-      graphImg = $("<img />", {
+      graphImg = $("<img>", {
         'id'  : "kicktraq_graph_" + name
       })
       .bind("error", handleImageError)
+      // set src AFTER binding the error handler
       .attr("src", kicktraqPath + "/" + graph.image);
 
       graphBtn = $("<li>", {
@@ -140,28 +158,31 @@ Kicktraq.prototype = {
         graphImg.hide();
       }
 
-      $kicktraq.find("#kicktraq_graph a").append(graphImg);
-      $kicktraq.find("#kicktraq_tabs").append(graphBtn);
+      k.graph.append(graphImg);
+      k.tabs.append(graphBtn);
     }
 
     // with only one tab, don't show the bar
     if (this.graphs.length === 1) {
-      $kicktraq.find("#kicktraq_tabs").hide();
+      k.tabs.hide();
     }
 
     // handle tabs
-    $kicktraq.on("click", "#kicktraq_tabs li", function () {
+    k.tabs.on("click", "li", function () {
       // handle the tab bar
-      $("#kicktraq_tabs li").removeClass("on");
+      k.tabs.find("li").removeClass("on");
       $(this).addClass("on");
 
       // handle the images
-      $("#kicktraq_graph a > *").hide();
-      $($(this).data("for"))
-      .show();
+      k.graph.find("> *").hide();
+      $($(this).data("for")).show();
     });
 
-    return $kicktraq;
+    return k.main
+    .append(k.placeholder)
+    .append(k.graph)
+    .append(k.tabs)
+    .append(k.srt);
   },
 
   /**
