@@ -65,8 +65,8 @@ test("images in error", function () {
   stop();
   setTimeout(function () {
     start();
-    equal($("#kicktraq_graph img").length, 0, "one image in error");
-    equal($("#kicktraq_graph .kicktraq_error").length, IMAGES_COUNT, "display 1 error");
+    equal($("#kicktraq_graph img").length, IMAGES_COUNT - 1, "one image in error, the other are not loaded");
+    equal($("#kicktraq_graph .kicktraq_error").length, 1, "display 1 error");
     equal($("#kicktraq_tabs li").length, TABS_COUNT, "all tabs are loaded");
   }, 200);
 });
@@ -89,4 +89,24 @@ test("tabs are working", function () {
   ok(!$("#kicktraq_tabs li:eq(0)").hasClass("on"), "after : the first tab is not selected");
   ok($("#kicktraq_tabs li:eq(1)").hasClass("on"), "after : the second tab is selected");
 
+});
+
+test("errors in tab are lazy", function () {
+  var kicktraq = new Kicktraq("/projects/kickuser/kickprojectinerror/");
+  kicktraq.onDOMReady();
+  stop();
+  setTimeout(function () {
+    start();
+    equal($("#kicktraq_graph img").length, IMAGES_COUNT - 1, "one image in error, the other are not loaded");
+    equal($("#kicktraq_graph .kicktraq_error").length, 1, "display 1 error");
+
+    $("#kicktraq_tabs li:eq(1)").click();
+
+    stop();
+    setTimeout(function () {
+      start();
+      equal($("#kicktraq_graph img").length, IMAGES_COUNT - 2, "2 images in error, the other are not loaded");
+      equal($("#kicktraq_graph .kicktraq_error").length, 2, "display 2 errors");
+    }, 200);
+  }, 200);
 });

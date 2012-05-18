@@ -16,6 +16,7 @@
 #kicktraq_graph {
   position:relative;
   display:block;
+  min-height: 270px;
 }
 #kicktraq_graph img {
   border: 0px;

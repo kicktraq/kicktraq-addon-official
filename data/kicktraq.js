@@ -143,9 +143,9 @@ Kicktraq.prototype = {
       graphImg = $("<img>", {
         'id'  : "kicktraq_graph_" + name
       })
-      .bind("error", handleImageError)
-      // set src AFTER binding the error handler
-      .attr("src", kicktraqPath + "/" + graph.image);
+      // don't set the src attr yet
+      .data("src", kicktraqPath + "/" + graph.image)
+      .bind("error", handleImageError);
 
       graphBtn = $("<li>", {
         'text'  : graph.text
@@ -153,7 +153,11 @@ Kicktraq.prototype = {
 
       if (name === currentGraph) {
         // selected graph
-        graphBtn.addClass("on");
+        graphBtn
+        .addClass("on")
+        .data("loaded", true);
+
+        graphImg.attr("src", graphImg.data("src"));
       } else {
         graphImg.hide();
       }
@@ -169,13 +173,21 @@ Kicktraq.prototype = {
 
     // handle tabs
     k.tabs.find("li").on("click", function () {
+      var $tab = $(this), $img = $($tab.data("for"));
+
       // handle the tab bar
       k.tabs.find("li").removeClass("on");
-      $(this).addClass("on");
+      $tab.addClass("on");
 
       // handle the images
       k.graph.find("> *").hide();
-      $($(this).data("for")).show();
+      $img.show();
+
+      // async load
+      if (!$tab.data("loaded")) {
+        $tab.data("loaded", true);
+        $img.attr("src", $img.data("src"));
+      }
     });
 
     k.tabs.append(
