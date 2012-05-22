@@ -1,10 +1,33 @@
 Kicktraq.URL_PREFIX = window.location.href.replace(/[^/]*$/, "");
 
+// number of tabs shown
 var TABS_COUNT = 4;
+// number of images in the tabs
 var IMAGES_COUNT = 3;
 
 module("pages");
 
+/**
+ * Test the space given via css for a given id.
+ * @param {string} bodyId the id of the body
+ * @param {boolean} hasExtraBorder true if the css should add extra space, false otherwise.
+ */
+function checkExtraSpaceForGraph(bodyId, hasExtraBorder) {
+  $(".test_body").attr("id", bodyId);
+  var divHeight = Number($("#content").css("height").replace(/[^-\d\.]/g, ''));
+  var threshold = 100;
+  if (hasExtraBorder) {
+    ok(divHeight > threshold, "the div has extra place");
+  } else {
+    ok(divHeight < threshold, "the div has no extra place");
+  }
+}
+
+/**
+ * Test that all the graphs are loaded.
+ * @param {Kicktraq} kicktraq the kicktraq object.
+ * @param {number} currentTab the current tab.
+ */
 function testAllGraphsAreLoaded(kicktraq, currentTab) {
 
   equal($("#kicktraq_graph img").length, IMAGES_COUNT, "all images loaded");
@@ -21,29 +44,79 @@ function testAllGraphsAreLoaded(kicktraq, currentTab) {
   }
 }
 
+/**
+ * Test that no graph loaded.
+ */
+function testNoGraph() {
+  equal($("#kicktraq").length, 0, "nothing happened");
+}
+
+
+
+/*
+ * do want the graphs
+ */
+
 test("home page", function () {
+  checkExtraSpaceForGraph("projects_show", true);
   var kicktraq = new Kicktraq("/projects/kickuser/kickproject/");
   kicktraq.onDOMReady();
   testAllGraphsAreLoaded(kicktraq, 0);
 });
 
 test("updates page", function () {
+  checkExtraSpaceForGraph("posts_index", true);
   var kicktraq = new Kicktraq("/projects/kickuser/kickproject/posts");
   kicktraq.onDOMReady();
   testAllGraphsAreLoaded(kicktraq, 0);
 });
 
-test("packers page", function () {
+test("backers page", function () {
+  checkExtraSpaceForGraph("backers_index", true);
   var kicktraq = new Kicktraq("/projects/kickuser/kickproject/backers");
   kicktraq.onDOMReady();
   testAllGraphsAreLoaded(kicktraq, 1);
 });
 
 test("comments page", function () {
+  checkExtraSpaceForGraph("projects_comments", true);
   var kicktraq = new Kicktraq("/projects/kickuser/kickproject/comments");
   kicktraq.onDOMReady();
   testAllGraphsAreLoaded(kicktraq, 0);
 });
+
+/*
+ * don't want the graphs
+ */
+
+test("manage pledge page", function () {
+  checkExtraSpaceForGraph("pledges_edit", false);
+  var kicktraq = new Kicktraq("/projects/kickuser/kickproject/pledge/edit");
+  kicktraq.onDOMReady();
+  testNoGraph();
+});
+
+test("manage pledge page, updating the amount", function () {
+  checkExtraSpaceForGraph("pledges_interstitial_for_update", false);
+  var kicktraq = new Kicktraq("/projects/kickuser/kickproject/pledge");
+  kicktraq.onDOMReady();
+  testNoGraph();
+});
+
+test("new pledge, thanks page", function () {
+  checkExtraSpaceForGraph("pledges_thanks", false);
+  var kicktraq = new Kicktraq("/projects/kickuser/kickproject/pledge/thanks");
+  kicktraq.onDOMReady();
+  testNoGraph();
+});
+
+test("send message in a new page", function () {
+  checkExtraSpaceForGraph("messages_new", false);
+  var kicktraq = new Kicktraq("/projects/kickuser/kickproject/messages/new?message[to]=123456789");
+  kicktraq.onDOMReady();
+  testNoGraph();
+});
+
 
 module("load images");
 

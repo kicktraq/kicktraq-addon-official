@@ -1,4 +1,7 @@
-#moneyraised {
+#projects_show #moneyraised,
+#posts_index #moneyraised,
+#backers_index #moneyraised,
+#projects_comments #moneyraised {
   border-top: 1px solid #82DB79;
 }
 
@@ -56,7 +59,10 @@
 
 
 /* prepare the page : we need enough space BEFORE inserting the #kicktraq */
-#content > div {
+#projects_show #content > div,
+#posts_index #content > div,
+#backers_index #content > div,
+#projects_comments #content > div {
   margin-top : 305px; /* #kicktraq height + border + margin */
 }
 /* when #kicktraq is in the DOM, we don't need anymore the margin */

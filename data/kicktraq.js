@@ -47,12 +47,12 @@ Kicktraq.prototype = {
   /**
    * Find which graph should be displayed.
    * @param {string} pathname the path of the current page
-   * @return {string} the graph to display.
+   * @return {string} the graph to display, null if none should be displayed.
    * @see this.graphs
    */
   _findCurrentGraph : function (pathname) {
 
-    var graph = "funding";
+    var graph = null;
 
     // aquire URL tokens
     var myURL = pathname.split('/');
@@ -64,6 +64,7 @@ Kicktraq.prototype = {
       switch (myURL[4]) {
         case 'comments':
         case 'posts':
+          graph = "funding";
           break;
         case 'backers':
           graph = "backers";
@@ -71,6 +72,8 @@ Kicktraq.prototype = {
         default:
           break;
       }
+    } else { // main page
+      graph = "funding";
     }
 
     return graph;
@@ -203,7 +206,7 @@ Kicktraq.prototype = {
     .append(k.placeholder)
     .append(k.graph)
     .append(k.tabs)
-    .append(k.srt);
+    .append(k.rst);
   },
 
   /**
