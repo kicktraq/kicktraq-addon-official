@@ -2,7 +2,7 @@ function Kicktraq(pathname) {
   this.init(pathname);
 };
 
-Kicktraq.URL_PREFIX = "http://kicktraq.com/";
+Kicktraq.URL_PREFIX = "http://www.kicktraq.com/";
 
 Kicktraq.prototype = {
 
