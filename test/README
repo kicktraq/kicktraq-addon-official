@@ -1,0 +1,3 @@
+The firefox addon-sdk provides a tool to test addons, but this plugin is just a
+list of js files included in the Kickstarter pages. Testing them with qunit
+seems a good idea.
